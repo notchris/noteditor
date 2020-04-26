@@ -1,5 +1,7 @@
 # NotEditor
 
+![NotEditor](https://notchris.net/noteditor/icon.png =250x250)
+
 A simple multi-platform 3D editor built with [three.js](https://threejs.org/) & [vue.js](https://vuejs.org/).
 
 ## Download
