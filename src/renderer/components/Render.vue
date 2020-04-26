@@ -62,8 +62,8 @@
 
     <!-- Scene -->
     <vgl-scene ref="scene" name="scene">
-      <vgl-ambient-light :color="`#606060`" :intensity="0.6" />
-      <vgl-directional-light ref="dlight" :color="`#FFFFFF`" cast-shadow />
+      <vgl-ambient-light :color="lights.ambient.color" :intensity="lights.ambient.intensity" />
+      <vgl-directional-light ref="dlight" :color="lights.directional.color" :intensity="lights.directional.intensity" cast-shadow />
       <vgl-grid-helper :hidden="!grid.visible" :size="grid.size * 2" :divisions="grid.size"/>
       <vgl-axes-helper :hidden="!axes.visible" :size="grid.size"/>
 
@@ -201,6 +201,9 @@ export default {
     },
     sky () {
       return this.$store.state.sky;
+    },
+    lights () {
+      return this.$store.state.lights;
     }
   },
   watch: {

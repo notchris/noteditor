@@ -50,6 +50,16 @@ export default new Vuex.Store({
       colorScatter: '#FFFFFF',
       colorSun: '#FEFFE2'
     },
+    lights: {
+      ambient: {
+        intensity: 0.6,
+        color: '#606060'
+      },
+      directional: {
+        intensity: 1.0,
+        color: '#FFFFFF'
+      }
+    },
     activeCreate: null,
     activeCreateRotation: 0,
     activeTexture: null,
@@ -82,6 +92,9 @@ export default new Vuex.Store({
     },
     updateSky(state, data) {
       state.sky[data.key] = data.value;
+    },
+    updateLights(state, data) {
+      state.lights[data.light][data.key] = data.value;
     },
     updateGrid(state, data) {
       state.grid[data.key] = data.value;

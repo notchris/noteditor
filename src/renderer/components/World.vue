@@ -42,6 +42,39 @@
         </table>
        </div>
    </details>
+   <details class="pl-1">
+       <summary class="border-left bg-secondary border-dark pl-1">Lights</summary>
+       <div>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Ambient Color</td>
+                    <td>
+                        <input type="color" :value="lights.ambient.color" @input="updateAmbientLightColor($event)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ambient Intensity</td>
+                    <td>
+                        <input type="number" :min="0" :max="1" :step="0.1" :value="lights.ambient.intensity" @input="updateAmbientLightIntensity($event)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Directional Color</td>
+                    <td>
+                        <input type="color" :value="lights.directional.color" @input="updateDirectionalLightColor($event)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Directional Intensity</td>
+                    <td>
+                        <input type="number" :min="0" :max="1" :step="0.1" :value="lights.directional.intensity" @input="updateDirectionalLightIntensity($event)"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+       </div>
+   </details>
   </div>
 </template>
 
@@ -52,6 +85,9 @@ export default {
   computed: {
       sky () {
           return this.$store.state.sky;
+      },
+      lights () {
+          return this.$store.state.lights;
       },
       grid () {
           return this.$store.state.grid;
@@ -78,6 +114,34 @@ export default {
               key: 'colorSun',
               value: e.target.value
           })
+      },
+      updateAmbientLightColor (e) {
+          this.$store.commit('updateLights', {
+              light: 'ambient',
+              key: 'color',
+              value: e.target.value
+          });
+      },
+      updateAmbientLightIntensity (e) {
+          this.$store.commit('updateLights', {
+              light: 'ambient',
+              key: 'intensity',
+              value: parseFloat(e.target.value)
+          });
+      },
+      updateDirectionalLightColor (e) {
+          this.$store.commit('updateLights', {
+              light: 'directional',
+              key: 'color',
+              value: e.target.value
+          });
+      },
+      updateDirectionalLightIntensity (e) {
+          this.$store.commit('updateLights', {
+              light: 'directional',
+              key: 'intensity',
+              value: parseFloat(e.target.value)
+          });
       },
       updateGrid (e) {
           this.$store.commit('updateGrid', {
