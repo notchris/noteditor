@@ -1,0 +1,233 @@
+* {
+    box-sizing: border-box;
+    text-rendering: optimizeLegibility;
+    font-kerning: auto;
+    outline: 0 !important;
+}
+
+html {
+    font-family: sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #999;
+    overflow: hidden;
+    font-size: 85% !important;
+}
+
+html, body, #app, .renderer {
+    width: 100%;
+    height: 100%;
+}
+
+iframe {
+    position: absolute !important;
+}
+
+.splitter-pane-resizer {
+    opacity: 1 !important;
+}
+
+.splitter-paneL.horizontal {
+    overflow: hidden !important;
+}
+
+.splitter-pane {
+    background: #8E8E8E;
+}
+
+#container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+#tools {
+    width: 30px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-right: 1px solid black;
+}
+
+.renderer {
+    width: calc(100% - 30px);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+input[type="color"], input[type="number"], input[type="text"] {
+    width: 100%;
+}
+
+button {
+    box-shadow: none !important;
+    transition: none !important;
+    border-radius: 0 !important;
+}
+
+.items {
+    width: 100%;
+    min-height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: absolute;
+    bottom: auto;
+    padding-top: 4px;
+}
+.item {
+    width: 60px;
+    margin: 0 10px;
+    float: left;
+}
+.item img {
+    width: 100%;
+}
+.item img.active {
+    border: 2px solid limegreen;
+}
+.item .label {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.status {
+    width: 100%;
+    height: 20px;
+    border-bottom: 1px solid black;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.tabs {
+    width: 100%;
+    height: 22px;
+    border-bottom: 1px solid black;
+    font-size: 12px;
+    line-height: 20px;
+}
+.tabs button {
+    height: 21px;
+    width: auto;
+    border-right: 1px solid black;
+    padding: 0 4px;
+    float: left;
+    background: #999;
+}
+
+/** Details stuff **/
+
+details {
+    margin-bottom: 6px;
+}
+
+details summary {
+    background: #999;
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    padding: 2px 2px;
+    user-select: none;
+    border-top: 1px solid;
+    cursor: pointer;
+}
+
+details details {
+    padding-left: 6px;
+    margin-bottom: 0;
+}
+details details:first-child summary {
+    border-top: none;
+    border-bottom: 1px solid black;
+}
+details details summary {
+    padding: 2px 2px;
+}
+
+details details > div {
+    padding-left: 6px;
+}
+
+/** Objects **/
+
+#objects {
+    padding-left: 6px;
+}
+
+.object {
+    width: 100%;
+}
+.object .isActive {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    padding-left: 2px;
+}
+.object .title {
+    width: 100%;
+    height: 20px;
+    line-height: 20px;
+    background: #777;
+    position: relative;
+    padding-left: 24px;
+    user-select: none;
+    cursor: pointer;
+    border-bottom: 1px solid black;
+}
+.object .details {
+    width: 100%;
+    height: auto;
+}
+
+/** Table **/
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td {
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+}
+tr td:first-child {
+    background: #777;
+}
+
+/** Splash **/
+
+#splash {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+}
+#splash div.fade {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #000;
+    opacity: 0.8;
+}
+#splash div.panel {
+    width: 50%;
+    height: auto;
+    background: #333;
+    border: 2px solid #999;
+    position: absolute;
+    z-index: 9999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

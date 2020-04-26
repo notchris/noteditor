@@ -1,0 +1,9 @@
+[{
+    "id": "spawn",
+    "name": "Spawn",
+    "category": "entity"
+},{
+    "id": "point",
+    "name": "Point",
+    "category": "entity"
+}]
