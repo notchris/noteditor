@@ -1,39 +1,48 @@
-# my-electron-vue-skeleton
+# NotEditor
 
-> [electron-vue](https://github.com/SimulatedGREG/electron-vue) skeleton with eslint, prettier and VS Code configs
+A simple multi-platform 3D editor built with [three.js](https://threejs.org/) & [vue.js](https://vuejs.org/).
 
-#### VS Code Extensions
+## Download
 
-```bash
-code --install-extension dbaeumer.vscode-eslint
-code --install-extension esbenp.prettier-vscode
-code --install-extension hollowtree.vue-snippets
-code --install-extension joelday.docthis
-code --install-extension octref.vetur
-code --install-extension esbenp.prettier-vscode
-```
+Official Website: [Downloads](https://notchris.net/noteditor)
 
-#### Build Setup
+## Build from source
+
+### Install
 
 ```bash
-# install dependencies
-yarn ( npm install )
-
-# serve with hot reload at localhost:9080
-yarn run dev ( npm run dev )
-
-# build electron application for production
-yarn run build ( npm run build )
-
-# run unit & end-to-end tests
-yarn test ( npm test )
-
-
-# lint all JS/Vue component files in `src/`
-yarn run lint ( npm run lint )
-
+npm install
 ```
 
----
+### Development
+Build the app for quick testing in Electron / browser.
 
-This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue)@[8fae476](https://github.com/SimulatedGREG/electron-vue/tree/8fae4763e9d225d3691b627e83b9e09b56f6c935) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+```bash
+npm run start
+```
+
+### Build Target
+Currently adding Windows & Linux build configurations.
+##### OSX
+```bash
+npm run build:darwin
+```
+##### Windows
+```bash
+npm run build:windows
+```
+##### Linux
+```bash
+npm run build:linux
+```
+## Documentation
+
+We are currently working on a complete documentation. This should be available here within the next week or so (4.26.20).
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
