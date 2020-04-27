@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-nested-ternary */
 import {Vector2, Vector3, Shape, Path, ExtrudeGeometry} from 'three';
 import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
@@ -6,7 +7,7 @@ import {VglGeometry }from 'vue-gl';
 export default {
   mixins: [VglGeometry],
   props: {
-    type: { default: 'block' },
+    type: { default: 'cube' },
     points: { default: [
       [1, 1, 1],
       [1, 1, -1],
@@ -30,6 +31,17 @@ export default {
       const geometry = new ConvexGeometry(
         pointArr
       );
+      
+      // Point Helper
+      /*
+      if (this.type === 'wall'){
+        const arr = [];
+        geometry.vertices.forEach((v) => {
+          arr.push([v.x, v.y, v.z]);
+        });
+        console.log(arr);
+      }
+      */
 
       // Update Normals
       if (!geometry.boundingBox) geometry.computeBoundingBox();

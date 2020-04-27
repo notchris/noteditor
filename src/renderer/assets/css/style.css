@@ -119,6 +119,28 @@ button {
     background: #999;
 }
 
+a.refresh {
+    color: #000;
+    font-weight: bold;
+    float: right;
+    font-size: 13px !important;
+    margin-right: 4px;
+}
+a.refresh:hover {
+    color: #444;
+}
+
+#bottom {
+    width: 100%;
+    height: 100%;
+}
+.content {
+    width: 100%;
+    height: calc(100% - 22px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 /** Details stuff **/
 
 details {
@@ -193,12 +215,26 @@ table {
     border-collapse: collapse;
 }
 
+
+th {
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    text-align: left;
+    font-size: 12px;
+    background: #444;
+    color: #CCC;
+    font-weight: normal;
+}
+
 td {
     border-left: 1px solid black;
     border-bottom: 1px solid black;
 }
 tr td:first-child {
     background: #777;
+}
+tr.active td {
+    background: #555555;
 }
 
 /** Splash **/

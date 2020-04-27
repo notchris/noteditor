@@ -22,10 +22,10 @@ export default new Vuex.Store({
       spawn: '0 0 0',
       objects: [{
         id: uuidv4(),
-        label: 'block',
+        label: 'cube',
         active: false,
         category: 'block',
-        type: 'block',
+        type: 'cube',
         position: '1 1 1',
         rotation: '0 0 0',
         color: '#EEEEEE',

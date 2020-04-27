@@ -11,6 +11,7 @@ const settings = require('electron-settings');
 app.allowRendererProcessReuse = true;
 const path = require('path')
 const fs = require("fs");
+const probe = require('probe-image-size');
 
 /**
  * Set `__static` path to static files in production
@@ -108,11 +109,13 @@ function init() {
       files.forEach((file) => {
         if (file.indexOf('.png') >= 0) {
           const d = fs.readFileSync(path.join(dir, file));
+          const img = probe.sync(d);
           const b = Buffer.from(d, 'binary').toString('base64');
           const s = `data:image/png;base64,${b}`;
           results.push({
             name: file.replace('.png',''),
-            data: s
+            data: s,
+            meta: img 
           });
         }
       });

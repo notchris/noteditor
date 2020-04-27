@@ -2,24 +2,32 @@
   <div id="models">
    <div class="status">
         <strong>Model Count:</strong> {{models.length}}
-        <button @click="refreshModels">
+        <a class="refresh" href="#" @click="refreshModels">
             <i class="mdi mdi-refresh"></i>
-        </button>
+        </a>
    </div>
-   <div class="items">
-        <div
+   <table>
+       <thead>
+           <tr>
+               <th>Name</th>
+               <th></th>
+            </tr>
+       </thead>
+       <tbody>
+       <tr
             v-for="model in models"
             :key="model.name"
-            class="item"
-            @click="setActiveCreate({
+            :class="[activeCreate && activeCreate.type === model.name ? 'active' : '']"
+       >
+           <td>{{model.name}}</td>
+           <td><button :disabled="activeCreate && activeCreate.type === model.name"
+                @click="setActiveCreate({
                 category: 'model',
                 id: model.name
-            })"
-        >
-            <div :class="[activeCreate && activeCreate.type === model.name ? 'active' : '', 'model']"></div>
-            <div class="label">{{model.name}}</div>
-        </div>
-   </div>
+            })">Select</button></td>
+       </tr>
+       </tbody>
+   </table>
   </div>
 </template>
 
@@ -55,14 +63,3 @@ export default {
   }
 };
 </script>
-
-<style>
-    .model {
-        width: 50px;
-        height: 50px;
-        background: lightgray;
-    }
-    .model.active {
-        border: 2px solid green;
-    }
-</style>

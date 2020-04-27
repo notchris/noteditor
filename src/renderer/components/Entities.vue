@@ -3,17 +3,26 @@
    <div class="status">
         <strong>Entity Count:</strong> {{entities.length}}
    </div>
-   <div class="items">
-        <div
+   <table>
+       <thead>
+           <tr>
+               <th>Name</th>
+               <th>Info</th>
+               <th></th>
+            </tr>
+       </thead>
+       <tbody>
+       <tr
             v-for="entity in entities"
             :key="entity.id"
-            class="item"
-            @click="setActiveCreate(entity)"
-        >
-            <img width="60" height="60" :class="[activeCreate && activeCreate.type === entity.id ? 'active' : '']" :src="`${path}/entities/${entity.id}.png`"/>
-            <div class="label">{{entity.name}}</div>
-        </div>
-   </div>
+            :class="[activeCreate && activeCreate.type === entity.id ? 'active' : '']"
+       >
+           <td>{{entity.name}}</td>
+           <td>Information</td>
+           <td><button :disabled="activeCreate && activeCreate.type === entity.id" @click="setActiveCreate(entity)">Select</button></td>
+       </tr>
+       </tbody>
+   </table>
   </div>
 </template>
 

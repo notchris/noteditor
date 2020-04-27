@@ -3,17 +3,26 @@
    <div class="status">
        <strong>Block Count:</strong> {{blocks.length}}
    </div>
-   <div class="items">
-        <div
+   <table>
+       <thead>
+           <tr>
+               <th>Name</th>
+               <th>Points</th>
+               <th></th>
+            </tr>
+       </thead>
+       <tbody>
+       <tr
             v-for="block in blocks"
             :key="block.id"
-            class="item"
-            @click="setActiveCreate(block)"
-        >
-            <img :class="[activeCreate && activeCreate.type === block.id ? 'active' : '']" :src="`${path}/blocks/${block.id}.png`"/>
-            <div class="label">{{block.name}}</div>
-        </div>
-   </div>
+            :class="[activeCreate && activeCreate.type === block.id ? 'active' : '']"
+       >
+           <td>{{block.name}}</td>
+           <td>{{block.points.length}}</td>
+           <td><button :disabled="activeCreate && activeCreate.type === block.id" @click="setActiveCreate(block)">Select</button></td>
+       </tr>
+       </tbody>
+   </table>
   </div>
 </template>
 

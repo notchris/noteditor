@@ -2,19 +2,30 @@
   <div id="textures">
    <div class="status">
        <strong>Texture Count:</strong> {{textures.length}}
-       <button @click="refreshTextures"><i class="mdi mdi-refresh"></i></button>
+       <a class="refresh" href="#" @click="refreshTextures"><i class="mdi mdi-refresh"></i></a>
    </div>
-   <div class="items">
-        <div
+   <table>
+       <thead>
+           <tr>
+               <th>Name</th>
+               <th>Size</th>
+               <th>Type</th>
+               <th></th>
+            </tr>
+       </thead>
+       <tbody>
+       <tr
             v-for="texture in textures"
             :key="texture.name"
-            class="item"
-            @click="setActiveTexture(texture.name)"
-        >
-            <img :class="[activeTexture === texture.name ? 'active' : '']" width="60" height="60" :src="texture.data"/>
-            <div class="label">{{texture.name}}</div>
-        </div>
-   </div>
+            :class="[activeTexture === texture.name ? 'active' : '']"
+       >
+           <td>{{texture.name}}</td>
+           <td>{{texture.meta.width}}x{{texture.meta.height}}</td>
+           <td>{{texture.meta.type}}</td>
+           <td><button :disabled="activeTexture === texture.name" @click="setActiveTexture(texture.name)">Select</button></td>
+       </tr>
+       </tbody>
+   </table>
   </div>
 </template>
 
