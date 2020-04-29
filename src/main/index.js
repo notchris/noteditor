@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 import {
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow;
+let testWindow;
 const winURL = process.env.NODE_ENV === 'development' ?
   'http://localhost:9080' :
   `file://${__dirname}/index.html`;
@@ -67,6 +69,10 @@ function init() {
 
   // Get local settings config
   ipcMain.on('requestSettings', (event, k) => {
+    // Get App path
+    const basePath = app.getAppPath();
+    mainWindow.webContents.send('updatePath', basePath);
+
     if (settings.has('modelsPath')) {
       mainWindow.webContents.send('updateSetting', {
         key: 'modelsPath',
@@ -161,10 +167,37 @@ function init() {
     });
   });
 
+  let lastLoaded = null;
+  ipcMain.on('saveMap', (event, map) => {
+    if (map) {
+      const result = dialog.showSaveDialogSync(mainWindow, {
+        title: 'Save Map',
+        defaultPath: lastLoaded || null,
+        buttonLabel: 'Save Map'
+      });
+      if (result && result.length) {
+        fs.writeFile(result, map, (err, r) => {
+          if (err) throw err;
+        });
+      }
+    } else {
+      console.log('No map data.')
+    }
+  });
+
+  ipcMain.on('testReady', (event, data) => {
+    if (data) {
+      testWindow.webContents.send('mapData',data);
+    } else {
+      console.log('No map data.')
+    }
+  });
+
 
   /**
    * Menu Options
    */
+
   const template = [
     // { role: 'appMenu' }
     ...(isMac ? [{
@@ -188,6 +221,7 @@ function init() {
           label: 'New Map',
           click: () => {
             mainWindow.webContents.send('newMap', true);
+            lastLoaded = false;
           }
         },
         {
@@ -201,6 +235,7 @@ function init() {
               fs.readFile(result[0], (err, data) => {
                 if (err) throw err;
                 mainWindow.webContents.send('loadMap', parseMap(data));
+                lastLoaded = result[0];
               });
             }
           }
@@ -210,10 +245,38 @@ function init() {
           role: '',
           label: 'Save Map',
           click: () => {
-
+            mainWindow.webContents.send('requestSave');
           }
         }
       ]
+    },
+    {
+      label: 'Test',
+      submenu: [{
+          role: '',
+          label: 'Start Test',
+          enabled: true,
+          click: (item) => {
+            item.enabled = false;
+            const modalPath = process.env.NODE_ENV === 'development'
+            ? 'http://localhost:9080/#/test'
+            : `file://${__dirname}/index.html#test`
+            testWindow = new BrowserWindow({
+              title: 'NotEditor - Test',
+              useContentSize: true,
+              width: 800,
+              height: 600,
+              webPreferences: {
+                nodeIntegration: true
+              }
+            });
+            testWindow.webContents.once('dom-ready', () => {
+              mainWindow.webContents.send('startTest');
+            });
+            testWindow.on('close', () => { testWindow = null; item.enabled = true;});
+            testWindow.loadURL(modalPath);
+          }
+        }]
     }
   ];
 
@@ -224,7 +287,7 @@ function init() {
 
 /**
  * App Events
- */
+*/
 
 app.on('ready', init);
 

@@ -267,3 +267,15 @@ tr.active td {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+/** Tooltip **/
+.vue-tooltip {
+    background-color: #333 !important;
+    color: #DDD !important;
+    font-size: 12px !important;
+}
+  
+.vue-tooltip .tooltip-arrow {
+    border-color: #333 !important;
+    top: 3px !important;
+}

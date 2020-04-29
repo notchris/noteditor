@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable no-nested-ternary */
-import {Vector2, Vector3, Shape, Path, ExtrudeGeometry} from 'three';
+import {Vector2, Vector3, BufferGeometry} from 'three';
 import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
 import {VglGeometry }from 'vue-gl';
 
@@ -72,7 +72,7 @@ export default {
       geometry.elementsNeedUpdate = geometry.verticesNeedUpdate = true;
       geometry.uvsNeedUpdate = true;
 
-      return geometry;
+      return new BufferGeometry().fromGeometry(geometry);
     }
   }
 };

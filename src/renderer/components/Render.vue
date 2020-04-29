@@ -69,7 +69,7 @@
 
       <!-- Helper -->
       <vgl-object3d
-          v-if="activeCreate && tool === 'create'"
+          v-if="activeCreate && showHelper && (tool === 'createObject' || tool === 'multiObject')"
           ref="helper"
           :position="helper.position"
           :rotation="`0 ${activeCreateRotation} 0 ZYX`"
@@ -107,8 +107,8 @@
             <vgl-mesh v-if="object.category === 'block'" :name="object.id" :geometry="`block_${object.type}`" :material="object.texture ? `material_${object.texture}` : `material_${object.id}`"></vgl-mesh>
             <vgl-obj-loader
                 v-if="object.category === 'model'"
-                :src="models.filter((m) => m.name === object.type)[0].data"
-                :mtl="models.filter((m) => m.name === object.type)[0].material"
+                :src="models.filter((m) => m.name === object.type).length ? models.filter((m) => m.name === object.type)[0].data : null"
+                :mtl="models.filter((m) => m.name === object.type).length ? models.filter((m) => m.name === object.type)[0].material : null"
                 :oid="object.id"
                 :name="`model_${object.id}`"
             ></vgl-obj-loader>
@@ -116,10 +116,14 @@
           </vgl-object-3d>
       </vgl-group>
 
+      <vgl-object-3d>
       <vgl-sprite
         :material="`entity_spawn`"
         :position="map.spawn"
+        name="spawn"
       ></vgl-sprite>
+      <vgl-transform-controls v-if="camera && renderer && tool === 'setSpawn'" ref="spawnControl" :camera="camera" :renderer="renderer" object="spawn"></vgl-transform-controls>
+      </vgl-object-3d>
 
       <vgl-box-helper
         v-if="activeObject"
@@ -152,7 +156,9 @@ export default {
         position: '0 0 0'
       },
       camera: null,
-      renderer: null
+      renderer: null,
+      multi: false,
+      showHelper: true
     }
   },
   computed: {
@@ -204,6 +210,9 @@ export default {
     },
     lights () {
       return this.$store.state.lights;
+    },
+    yOffset () {
+      return this.$store.state.yOffset;
     }
   },
   watch: {
@@ -223,7 +232,10 @@ export default {
         },
         deep: true
     },
-    tool () {
+    tool (v) {
+      if (v === 'deleteObject') {
+        this.$store.commit('setActiveObject', null);
+      }
       this.$refs.renderer.requestRender();
     }
   },
@@ -259,9 +271,38 @@ export default {
       this.$refs.renderer.inst.domElement.addEventListener('mouseleave', (e) => {
           this.mouseUp(e);
       });
+
+      // Window + Tool Events
+      window.addEventListener('keypress', (e) => {
+        console.log(e.keyCode);
+        switch (e.keyCode) {
+          case 114: // R
+            if (this.tool === 'select') {
+              if (this.activeObject) {
+                this.$store.commit('setActiveRotation');
+              }
+            } else if (this.tool === 'createObject') {
+              this.$store.commit('setActiveCreateRotation');
+            }
+            break;
+          case 61:
+              console.log('plus y');
+              this.$store.commit('setYOffset', this.yOffset + 2);
+              this.helper.position = `${this.tempVector.x} ${this.tempVector.y + this.yOffset} ${this.tempVector.z}`;
+            break;
+          case 45:
+              this.$store.commit('setYOffset', this.yOffset - 2);
+              this.helper.position = `${this.tempVector.x} ${this.tempVector.y + this.yOffset} ${this.tempVector.z}`;
+            break;
+          default:
+            break;
+        }
+        this.$refs.renderer.requestRender();
+      });
   },
   methods: {
       mouseDown (e) {
+        this.showHelper = false;
         if (!this.tool || e.button !== 0) return;
         const intersects = this.raycaster.intersectObjects(this.$refs.group.inst.children, true);
         if (intersects.length > 0) {
@@ -274,21 +315,45 @@ export default {
               }
             }
 
-            if (this.tool === 'create') {
+            if (this.tool === 'createObject') {
+                if (!this.activeCreate) return;
                 this.$store.commit('addObject', {
                     category: this.activeCreate.category,
                     type: this.activeCreate.type,
-                    position: this.tempVector,
+                    position: new Vector3(this.tempVector.x, this.tempVector.y + this.yOffset, this.tempVector.z),
                     rotation: `0 ${this.activeCreateRotation} 0`
                 });
+                this.$store.commit('setYOffset', 0);
             }
 
-            if (this.tool === 'delete') {
+            if (this.tool === 'multiObject') {
+                if (!this.activeCreate) return;
+                this.multi = true;
+            }
+
+            if (this.tool === 'deleteObject') {
               if (intersects[0].object.name !== 'plane') {
                 this.$store.commit('deleteObject', intersects[0].object.name);
               }
             }
 
+            if (this.tool === 'colorApply') {
+              if (intersects[0].object.name !== 'plane') {
+                this.$store.commit('setColor', intersects[0].object.name);
+              }
+            }
+
+            if (this.tool === 'textureApply') {
+              if (intersects[0].object.name !== 'plane') {
+                this.$store.commit('setObjectTexture', intersects[0].object.name);
+              }
+            }
+
+            if (this.tool === 'textureRemove') {
+              if (intersects[0].object.name !== 'plane') {
+                this.$store.commit('removeObjectTexture', intersects[0].object.name);
+              }
+            }
 
         } else {
             this.$store.commit('setActiveObject', null);
@@ -306,12 +371,29 @@ export default {
                 this.tempVector = new Vector3();
                 this.tempVector.copy(intersects[0].point).add(intersects[0].face.normal);
                 this.tempVector.divideScalar(2).floor().multiplyScalar(2).addScalar(1);
-                this.helper.position = `${this.tempVector.x} ${this.tempVector.y} ${this.tempVector.z}`;
+                this.helper.position = `${this.tempVector.x} ${this.tempVector.y + this.yOffset} ${this.tempVector.z}`;
             }
+        }
+
+        if (this.multi) {
+          if (!this.activeCreate) return;
+          if (intersects[0].object.name === 'plane') {
+            this.$store.commit('addObject', {
+                category: this.activeCreate.category,
+                type: this.activeCreate.type,
+                position: this.tempVector,
+                rotation: `0 ${this.activeCreateRotation} 0`
+            });
+            this.$store.commit('setYOffset', 0);
+          }
         }
       },
       mouseUp (e) {
-        // console.log('mouseUp');
+        this.showHelper = true;
+        if (this.tool === 'multiObject') {
+            if (!this.activeCreate) return;
+            this.multi = false;
+        }
       }
   }
 };

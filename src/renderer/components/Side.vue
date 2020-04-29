@@ -9,7 +9,7 @@
           <div><World/></div>
       </details>
       <details>
-          <summary><i class="mdi mdi-folder"></i> Objects</summary>
+          <summary><i class="mdi mdi-toy-brick"></i> Objects</summary>
           <div><Objects/></div>
       </details>
       <details>

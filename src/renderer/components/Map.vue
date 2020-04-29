@@ -8,7 +8,7 @@
            </tr>
            <tr>
                <td>Spawn</td>
-               <td>{{map.spawn}}</td>
+               <td>{{fix(map.spawn)}} <button :disabled="tool === 'setSpawn'" @click="setTool('setSpawn')">Update</button></td>
            </tr>
        </tbody>
    </table>
@@ -24,6 +24,9 @@ export default {
   computed: {
       map () {
           return this.$store.state.map;
+      },
+      tool () {
+          return this.$store.state.tool;
       }
   },
   methods: {
@@ -32,7 +35,14 @@ export default {
           if (val.length) {
               this.$store.commit('updateMapTitle', val);
           }
-      }
+      },
+      setTool (tool) {
+          this.$store.commit('setTool', tool);
+      },
+      fix(v) {
+          const s = v.split(' ');
+          return `${parseFloat(s[0]).toFixed(1)} ${parseFloat(s[1]).toFixed(1)} ${parseFloat(s[1]).toFixed(1)}`;
+      } 
   }
 };
 </script>

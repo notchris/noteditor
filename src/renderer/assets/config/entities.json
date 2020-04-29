@@ -6,4 +6,8 @@
     "id": "point",
     "name": "Point",
     "category": "entity"
+},{
+    "id": "hole",
+    "name": "Hole",
+    "category": "entity"
 }]

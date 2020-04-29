@@ -2,6 +2,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
+import { Vector3 } from 'three';
 
 import BlockList from '../assets/config/blocks.json';
 import EntityList from '../assets/config/entities.json';
@@ -14,23 +15,14 @@ export default new Vuex.Store({
     splash: true,
     settings: {
       modelsPath: null,
-      texturesPath: null
+      texturesPath: null,
+      path: null
     },
     map: {
       id: uuidv4(),
       title: 'Untitled Map',
-      spawn: '0 0 0',
-      objects: [{
-        id: uuidv4(),
-        label: 'cube',
-        active: false,
-        category: 'block',
-        type: 'cube',
-        position: '1 1 1',
-        rotation: '0 0 0',
-        color: '#EEEEEE',
-        texture: null
-      }]
+      spawn: '1 1 1',
+      objects: []
     },
     textures: [],
     models: [],
@@ -63,11 +55,15 @@ export default new Vuex.Store({
     activeCreate: null,
     activeCreateRotation: 0,
     activeTexture: null,
-    activeColor: '#CCCCCC'
+    activeColor: '#CCCCCC',
+    yOffset: 0
   },
   mutations: {
     hideSplash (state) {
       state.splash = false;
+    },
+    updatePath (state, path) {
+      state.settings.path = path;
     },
     updateSetting (state, payload) {
       state.settings[payload.key] = payload.value;
@@ -78,10 +74,60 @@ export default new Vuex.Store({
     updateTextures (state, data) {
       state.textures = data;
     },
-    updateModels(state, data) {
+    updateModels (state, data) {
       state.models = data;
     },
-    toggleDisplay(state, key) {
+    newMap (state) {
+      state.map = {
+        id: uuidv4(),
+        title: 'Untitled Map',
+        spawn: '0 0 0',
+        objects: []
+      }
+    },
+    loadMap (state, data) {
+      // Map reset
+      state.map = {
+        id: data.id || uuidv4(),
+        title: data.title || 'Untitled Map',
+        spawn: data.spawn || '0 0 0',
+        objects: []
+      }
+
+      // World reset
+      state.grid.size = data.world.size || 50;
+      state.sky = {
+        colorSky: data.world.sky.color || '#4052E2',
+        colorScatter: data.world.sky.scatter || '#FFFFFF',
+        colorSun: data.world.sky.sun || '#FEFFE2'
+      }
+      state.lights = {
+        ambient: {
+          color: data.world.lights.ambient.color || "#FFFFFF",
+          intensity: data.world.lights.ambient.intensity || 1.0
+        },
+        directional: {
+            color: data.world.lights.directional.color || "#FFFFFF",
+            intensity: data.world.lights.directional.intensity || 1.0
+        }
+      }
+
+      // Load objects
+      data.objects.forEach((o) => {
+        state.map.objects.push({
+          id: uuidv4(),
+          type: o.type,
+          category: o.category,
+          label: o.label,
+          position: o.position,
+          rotation: o.rotation,
+          active: false,
+          color: o.color || '#CCCCCC',
+          texture: o.texture || null
+        });
+      });
+    },
+    toggleDisplay (state, key) {
       if (key === 'grid') {
         state.grid.visible = !state.grid.visible;
       } else if (key === 'axes') {
@@ -90,33 +136,36 @@ export default new Vuex.Store({
         state.sky.visible = !state.sky.visible;
       }
     },
-    updateSky(state, data) {
+    updateSky (state, data) {
       state.sky[data.key] = data.value;
     },
-    updateLights(state, data) {
+    updateLights (state, data) {
       state.lights[data.light][data.key] = data.value;
     },
-    updateGrid(state, data) {
+    updateGrid (state, data) {
       state.grid[data.key] = data.value;
     },
-    setTool(state, tool) {
+    setTool (state, tool) {
       state.tool = tool;
     },
-    setActiveCreate(state, obj) {
+    setSpawn (state, pos) {
+      state.map.spawn = `${pos.x} ${pos.y} ${pos.z}`;
+      console.log(pos.x, pos.y, pos.z)
+    },
+    setActiveCreate (state, obj) {
       state.activeCreate = {
         type: obj.id,
         category: obj.category
       }
     },
-    setActiveCreateRotation(state) {
+    setActiveCreateRotation (state) {
       if (state.activeCreateRotation > 4) {
         state.activeCreateRotation = 0;
       } else {
         state.activeCreateRotation += Math.PI / 2;
       }
-      console.log(state.activeCreateRotation);
     },
-    setActiveObject(state, id) {
+    setActiveObject (state, id) {
       state.map.objects.forEach((o) => {o.active = false});
       state.map.objects.forEach((o) => {
         if (o.id === id) {
@@ -130,12 +179,13 @@ export default new Vuex.Store({
     setActiveColor (state, color) {
       state.activeColor = color;
     },
-    setActiveRotation(state) {
+    setYOffset (state, offset) {
+      state.yOffset = offset;
+    },
+    setActiveRotation (state) {
       for (let i = 0; i < state.map.objects.length; i += 1) {
         if (state.map.objects[i].active) {
           const r = state.map.objects[i].rotation.split(' ');
-          console.log(`0 ${parseFloat(r[1]) * Math.PI/2} 0`)
-          console.log(r)
           if (parseFloat(r[1]) > 4) {
             state.map.objects[i].rotation = '0 0 0';
           } else {
@@ -148,6 +198,28 @@ export default new Vuex.Store({
       for (let i = 0; i < state.map.objects.length; i += 1) {
         if (state.map.objects[i].active) {
           state.map.objects[i].color = color;
+        }
+      }
+    },
+    setColor (state, id) {
+      for (let i = 0; i < state.map.objects.length; i += 1) {
+        if (state.map.objects[i].id === id && state.map.objects[i].category === 'block') {
+          state.map.objects[i].color = state.activeColor;
+        }
+      }
+    },
+    setObjectTexture (state, id) {
+      if (!state.activeTexture) return;
+      for (let i = 0; i < state.map.objects.length; i += 1) {
+        if (state.map.objects[i].id === id && state.map.objects[i].category === 'block') {
+          state.map.objects[i].texture = state.activeTexture;
+        }
+      }
+    },
+    removeObjectTexture (state, id) {
+      for (let i = 0; i < state.map.objects.length; i += 1) {
+        if (state.map.objects[i].id === id && state.map.objects[i].category === 'block') {
+          state.map.objects[i].texture = null;
         }
       }
     },
@@ -179,7 +251,7 @@ export default new Vuex.Store({
         });
       }
     },
-    deleteObject(state, id) {
+    deleteObject (state, id) {
       for (let i = 0; i < state.map.objects.length; i += 1) {
         if (state.map.objects[i].id === id) {
           state.map.objects.splice(i, 1);

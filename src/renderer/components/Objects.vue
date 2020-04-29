@@ -1,5 +1,6 @@
 <template>
   <div id="objects" class="pl-1 py-1 border-bottom border-left border-dark">
+
    <div
     v-for="object in objects"
     :key="object.id"
@@ -31,7 +32,7 @@
                 </tr>
                 <tr>
                     <td>Rotate</td>
-                    <td><button @click="setActiveRotation">Rotate</button></td>
+                    <td><button @click="setActiveRotation">Rotate (R)</button></td>
                 </tr>
                 <tr v-if="object.category === 'block'">
                     <td><strong>Material</strong></td>
