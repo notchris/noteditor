@@ -105,6 +105,7 @@
           >
             <vgl-sprite v-if="object.category === 'entity'" :name="object.id" :material="`entity_${object.type}`"></vgl-sprite>
             <vgl-mesh v-if="object.category === 'block'" :name="object.id" :geometry="`block_${object.type}`" :material="object.texture ? `material_${object.texture}` : `material_${object.id}`"></vgl-mesh>
+            
             <vgl-obj-loader
                 v-if="object.category === 'model'"
                 :src="models.filter((m) => m.name === object.type).length ? models.filter((m) => m.name === object.type)[0].data : null"
@@ -112,7 +113,9 @@
                 :oid="object.id"
                 :name="`model_${object.id}`"
             ></vgl-obj-loader>
-          <vgl-transform-controls v-if="camera && renderer && object.active && object.category === 'model'" :camera="camera" :renderer="renderer" :object="`model_${object.id}`"></vgl-transform-controls>
+
+
+          <vgl-transform-controls v-if="camera && renderer && object.active && object.category === 'model'" :camera="camera" :renderer="renderer" :object="`model_${object.id}`" :pos="object.position"></vgl-transform-controls>
           </vgl-object-3d>
       </vgl-group>
 
@@ -129,7 +132,9 @@
         v-if="activeObject"
         :object="`object_${activeObject.id}`"
         :hidden="!activeObject"
+        name="boxHelper"
       />
+
     </vgl-scene>
     <vgl-perspective-camera ref="camera" :near="0.1" :far="2000000" :fov="45" name="camera" :position="'20, 15, 20'"></vgl-perspective-camera>
   </vgl-renderer>
@@ -257,6 +262,7 @@ export default {
       // Add Sky
       this.$refs.scene.inst.add(sky);
       this.$refs.renderer.requestRender();
+      sky.visible = false;
 
       // Events
       this.$refs.renderer.inst.domElement.addEventListener('mousedown', (e) => {
@@ -274,7 +280,7 @@ export default {
 
       // Window + Tool Events
       window.addEventListener('keypress', (e) => {
-        console.log(e.keyCode);
+        if (document.activeElement.type === 'text') return;
         switch (e.keyCode) {
           case 114: // R
             if (this.tool === 'select') {
@@ -286,7 +292,6 @@ export default {
             }
             break;
           case 61:
-              console.log('plus y');
               this.$store.commit('setYOffset', this.yOffset + 2);
               this.helper.position = `${this.tempVector.x} ${this.tempVector.y + this.yOffset} ${this.tempVector.z}`;
             break;
@@ -308,7 +313,10 @@ export default {
         if (intersects.length > 0) {
 
             if (this.tool === 'select') {
-              if (intersects[0].object.name !== 'plane') {
+              if (intersects[0].object.name !== 'plane' && intersects[0].object.name.length) {
+                if (this.activeObject && this.activeObject.category === 'model') {
+                  return;
+                }
                 this.$store.commit('setActiveObject', intersects[0].object.name);
               } else {
                 this.$store.commit('setActiveObject', null);
@@ -355,6 +363,15 @@ export default {
               }
             }
 
+            if (this.tool === 'eyeDropper') {
+              if (intersects[0].object.name !== 'plane') {
+                const t = this.map.objects.filter((o) => o.id === intersects[0].object.name)
+                if (t.length && t[0].color) {
+                  this.$store.commit('setActiveColor', t[0].color);
+                }
+              }
+            }
+
         } else {
             this.$store.commit('setActiveObject', null);
         }
@@ -381,10 +398,10 @@ export default {
             this.$store.commit('addObject', {
                 category: this.activeCreate.category,
                 type: this.activeCreate.type,
-                position: this.tempVector,
+                position: new Vector3(this.tempVector.x, this.tempVector.y + this.yOffset, this.tempVector.z),
                 rotation: `0 ${this.activeCreateRotation} 0`
             });
-            this.$store.commit('setYOffset', 0);
+            // this.$store.commit('setYOffset', 0);
           }
         }
       },

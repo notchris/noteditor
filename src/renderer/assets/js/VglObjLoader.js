@@ -24,8 +24,15 @@ export default {
                 o.traverse((child) => {
                     if (child.type === 'Mesh') {
                         child.name = this.oid;
+                        child.material = new THREE.MeshPhongMaterial({
+                            color: 0xff0000,
+                            side: THREE.DoubleSide,
+                            opacity: 1
+                        })
+                        child.material.needsUpdate = true;
                     }
                 });
+                
                 this.vglObject3d.emit();
             });
             /** 

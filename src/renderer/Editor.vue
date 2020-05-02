@@ -22,12 +22,40 @@
         </split-pane>
       </template>
       <template slot="paneR">
-        <split-pane :min-percent='20' :default-percent='70' split="horizontal">
+        <split-pane :min-percent='20' :default-percent='60' split="horizontal">
           <template slot="paneL">
-           <Side/>
+
+            <split-pane :min-percent='10' :default-percent='50' split="horizontal">
+              <template slot="paneL">
+                <div class="sectionTitle"><i class="mdi mdi-cogs"></i> Config</div>
+                 <Config/>
+              </template>
+              <template slot="paneR">
+                <div class="sectionTitle"><i class="mdi mdi-cube-outline"></i> Objects <button v-tooltip.bottom="'New Group'"  @click="createGroup"><i class="mdi mdi-plus"></i></button></div>
+                <vue-custom-scrollbar class="container">
+                  <Objects/>
+                </vue-custom-scrollbar>
+              </template>
+            </split-pane>
+
+
           </template>
           <template slot="paneR">
-            <ActiveTool/>
+            <split-pane :min-percent='10' :default-percent='50' split="horizontal">
+              <template slot="paneL">
+                <div class="sectionTitle"><i class="mdi mdi-cube-scan"></i> Active Object</div>
+                <vue-custom-scrollbar class="container">
+                  <div v-if="!activeObject" class="message" >No active object</div>
+                  <ActiveObject v-if="activeObject" :object="activeObject"/>
+                </vue-custom-scrollbar>
+              </template>
+              <template slot="paneR">
+                <div class="sectionTitle"><i class="mdi mdi-tools"></i> Tool: {{tool}}</div>
+                <vue-custom-scrollbar class="container">
+                  <ActiveTool/>
+                </vue-custom-scrollbar>
+              </template>
+            </split-pane>
           </template>
         </split-pane>
       </template>
@@ -39,24 +67,39 @@
 /* eslint-disable no-console */
 import Render from './components/Render';
 import Bottom from './components/Bottom';
-import Side from './components/Side';
+import Config from './components/Config';
 import ActiveTool from './components/ActiveTool';
+import ActiveObject from './components/ActiveObject';
+import Objects from './components/Objects';
 import Tools from './components/Tools';
 import Splash from './components/Splash';
+
 
 export default {
   name: 'Start',
   components: {
     Render,
     Bottom,
-    Side,
+    Objects,
+    Config,
     ActiveTool,
+    ActiveObject,
     Tools,
     Splash
   },
   computed: {
     splash () {
       return this.$store.state.splash;
+    },
+    activeObject () {
+      const a = this.$store.state.map.objects.filter((o) => o.active);
+      if (a.length) {
+          return a[0];
+      }
+      return null;
+    },
+    tool () {
+      return this.$store.state.tool;
     }
   },
   mounted () {
@@ -97,6 +140,7 @@ export default {
           },
           lights: this.$store.state.lights
         },
+        groups: this.$store.state.map.groups,
         objects: this.$store.state.map.objects
       };
       this.$electron.ipcRenderer.send('saveMap', JSON.stringify(map));
@@ -130,10 +174,28 @@ export default {
     this.$electron.ipcRenderer.on('updateModels', (event, data) => {
       this.$store.commit('updateModels', data);
     });
+
+    // Undo Event
+    this.$electron.ipcRenderer.on('undo', (event, data) => {
+      if (this.canUndo) {
+        this.undo();
+      }
+    });
+    // Redo Event
+    this.$electron.ipcRenderer.on('redo', (event, data) => {
+      if (this.canRedo) {
+        this.redo();
+      }
+    });
   },
   methods: {
     hideSplash() {
       this.$store.commit('hideSplash');
+    },
+    createGroup () {
+        this.$store.commit('addGroup', {
+            label: 'Untitled Group'
+        });
     }
   }
 };

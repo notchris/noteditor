@@ -8,7 +8,6 @@
            <tr>
                <th>Name</th>
                <th>Info</th>
-               <th></th>
             </tr>
        </thead>
        <tbody>
@@ -16,10 +15,10 @@
             v-for="entity in entities"
             :key="entity.id"
             :class="[activeCreate && activeCreate.type === entity.id ? 'active' : '']"
+             @click="setActiveCreate(entity)"
        >
            <td>{{entity.name}}</td>
-           <td>Information</td>
-           <td><button :disabled="activeCreate && activeCreate.type === entity.id" @click="setActiveCreate(entity)">Select</button></td>
+           <td>{{entity.description}}</td>
        </tr>
        </tbody>
    </table>

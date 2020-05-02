@@ -2,7 +2,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
-import { Vector3 } from 'three';
 
 import BlockList from '../assets/config/blocks.json';
 import EntityList from '../assets/config/entities.json';
@@ -12,6 +11,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   // strict: process.env.NODE_ENV !== 'production',
   state: {
+    version: '1.04',
     splash: true,
     settings: {
       modelsPath: null,
@@ -22,7 +22,8 @@ export default new Vuex.Store({
       id: uuidv4(),
       title: 'Untitled Map',
       spawn: '1 1 1',
-      objects: []
+      objects: [],
+      groups: []
     },
     textures: [],
     models: [],
@@ -37,7 +38,7 @@ export default new Vuex.Store({
       visible: true
     },
     sky: {
-      visible: true,
+      visible: false,
       colorSky: '#4052E2',
       colorScatter: '#FFFFFF',
       colorSun: '#FEFFE2'
@@ -59,6 +60,12 @@ export default new Vuex.Store({
     yOffset: 0
   },
   mutations: {
+    emptyState(state) {
+      state.map.title = "Untitled Map";
+      state.map.objects = [];
+      state.map.groups = [];
+      state.map.spawn = "1 1 1";
+    },
     hideSplash (state) {
       state.splash = false;
     },
@@ -91,6 +98,7 @@ export default new Vuex.Store({
         id: data.id || uuidv4(),
         title: data.title || 'Untitled Map',
         spawn: data.spawn || '0 0 0',
+        groups: [],
         objects: []
       }
 
@@ -113,6 +121,15 @@ export default new Vuex.Store({
       }
 
       // Load objects
+      data.groups.forEach((g) => {
+        state.map.groups.push({
+          id: g.id,
+          label: g.label,
+          open: g.open,
+          edit: g.edit
+        });
+      });
+
       data.objects.forEach((o) => {
         state.map.objects.push({
           id: uuidv4(),
@@ -123,7 +140,8 @@ export default new Vuex.Store({
           rotation: o.rotation,
           active: false,
           color: o.color || '#CCCCCC',
-          texture: o.texture || null
+          texture: o.texture || null,
+          group: o.group
         });
       });
     },
@@ -150,7 +168,6 @@ export default new Vuex.Store({
     },
     setSpawn (state, pos) {
       state.map.spawn = `${pos.x} ${pos.y} ${pos.z}`;
-      console.log(pos.x, pos.y, pos.z)
     },
     setActiveCreate (state, obj) {
       state.activeCreate = {
@@ -173,6 +190,20 @@ export default new Vuex.Store({
         }
       });
     },
+    setActiveLabel (state, label) {
+      for (let i = 0; i < state.map.objects.length; i += 1) {
+        if (state.map.objects[i].active) {
+          state.map.objects[i].label = label;
+        }
+      }
+    },
+    setActiveGroup (state, id) {
+      for (let i = 0; i < state.map.objects.length; i += 1) {
+        if (state.map.objects[i].active) {
+          state.map.objects[i].group = id;
+        }
+      }
+    },
     setActiveTexture (state, id) {
       state.activeTexture = id;
     },
@@ -180,6 +211,9 @@ export default new Vuex.Store({
       state.activeColor = color;
     },
     setYOffset (state, offset) {
+      if (offset < 0) {
+        offset = 0;
+      }
       state.yOffset = offset;
     },
     setActiveRotation (state) {
@@ -223,6 +257,35 @@ export default new Vuex.Store({
         }
       }
     },
+    addGroup (state, o) {
+      state.map.groups.push({
+        id: uuidv4(),
+        label: o.label,
+        open: false,
+        edit: false
+      });
+    },
+    toggleGroup (state, id) {
+      for (let i = 0; i < state.map.groups.length; i += 1) {
+        if (state.map.groups[i].id === id) {
+          state.map.groups[i].open = !state.map.groups[i].open;
+        }
+      }
+    },
+    setGroupLabel (state, data) {
+      for (let i = 0; i < state.map.groups.length; i += 1) {
+        if (state.map.groups[i].id === data.id) {
+          state.map.groups[i].label = data.label;
+        }
+      }
+    },
+    toggleGroupEdit (state, id) {
+      for (let i = 0; i < state.map.groups.length; i += 1) {
+        if (state.map.groups[i].id === id) {
+          state.map.groups[i].edit = !state.map.groups[i].edit;
+        }
+      }
+    },
     addObject (state, o) {
       let dupe = false;
       for (let i = 0; i < state.map.objects.length; i += 1) {
@@ -242,12 +305,14 @@ export default new Vuex.Store({
           id: uuidv4(),
           type: o.type,
           category: o.category,
-          label: `${o.category}`,
+          label: `${o.category.charAt(0).toUpperCase() + o.category.slice(1)}`,
           position: `${o.position.x} ${o.position.y} ${o.position.z}`,
           rotation: o.rotation,
           active: false,
           color: state.activeColor || '#CCCCCC',
-          texture: state.activeTexture || null
+          texture: state.activeTexture || null,
+          order: state.map.objects.length,
+          group: null
         });
       }
     },
@@ -257,6 +322,9 @@ export default new Vuex.Store({
           state.map.objects.splice(i, 1);
         }
       }
+    },
+    updateOrder (state, value) {
+      state.map.objects = value;
     }
   }
 });

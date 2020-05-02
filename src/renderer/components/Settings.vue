@@ -1,7 +1,7 @@
 <template>
-  <div id="settings" class="pl-1 py-1 border-bottom border-left border-dark">
+  <div id="settings">
    <details>
-       <summary class="bg-secondary pl-1 border-left border-top border-bottom border-dark text-dark">Asset Paths</summary>
+       <summary><i class="mdi mdi-folder"></i> Asset Paths</summary>
        <div>
         <table>
             <tbody>
@@ -24,7 +24,7 @@
        </div>
    </details>
    <details>
-       <summary class="bg-secondary pl-1 border-left border-top border-bottom border-dark text-dark">Display</summary>
+       <summary><i class="mdi mdi-eye"></i> Display</summary>
        <div>
         <table>
             <tbody>
@@ -77,12 +77,8 @@ export default {
           return this.$store.state.sky;
       }
   },
-  mounted () {
-      console.log('Settings');
-  },
   methods: {
       updateSetting (key) {
-        console.log('Updating setting');
         this.$electron.ipcRenderer.send('updateSetting', key);
       },
       toggleDisplay (key) {

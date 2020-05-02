@@ -1,6 +1,5 @@
 <template>
   <div id="activeTool">
-      <div class="status"><strong>Tool:</strong> <span class="tool">{{tool}}</span></div>
       <div v-if="activeCreate && tool === 'createObject'">
         <table>
           <tr><td>Category</td><td>{{activeCreate.category}}</td></tr>
@@ -11,8 +10,8 @@
           <tr><td>YOffset</td><td>{{yOffset}} (+/-)</td></tr>
         </table>
       </div>
-      <div v-if="tool === 'colorApply'" class="colorApply">
-        <input type="color" :value="activeColor" @change="onColorChange($event)">
+      <div v-if="tool === 'colorApply' || tool === 'eyeDropper'" class="colorApply">
+        <input :disabled="tool === 'eyeDropper'" type="color" :value="activeColor" @change="onColorChange($event)">
       </div>
   </div>
 </template>

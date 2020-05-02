@@ -10,7 +10,6 @@
                <th>Name</th>
                <th>Size</th>
                <th>Type</th>
-               <th></th>
             </tr>
        </thead>
        <tbody>
@@ -18,11 +17,11 @@
             v-for="texture in textures"
             :key="texture.name"
             :class="[activeTexture === texture.name ? 'active' : '']"
+            @click="setActiveTexture(texture.name)"
        >
            <td>{{texture.name}}</td>
            <td>{{texture.meta.width}}x{{texture.meta.height}}</td>
            <td>{{texture.meta.type}}</td>
-           <td><button :disabled="activeTexture === texture.name" @click="setActiveTexture(texture.name)">Select</button></td>
        </tr>
        </tbody>
    </table>

@@ -1,25 +1,25 @@
 <template>
   <div id="bottom">
    <div class="tabs">
-        <button :disabled="tab === 'blocks'" @click="tab = 'blocks'">Blocks</button>
-        <button :disabled="tab === 'entities'" @click="tab = 'entities'">Entities</button>
-        <button :disabled="tab === 'models'" @click="tab = 'models'">Models</button>
-        <button :disabled="tab === 'textures'" @click="tab = 'textures'">Textures</button>
+        <button :disabled="tab === 'blocks'" @click="tab = 'blocks'"><i class="mdi mdi-cube"></i> Blocks</button>
+        <button :disabled="tab === 'entities'" @click="tab = 'entities'"><i class="mdi mdi-circle-outline"></i> Entities</button>
+        <button :disabled="tab === 'models'" @click="tab = 'models'"><i class="mdi mdi-ufo"></i> Models</button>
+        <button :disabled="tab === 'textures'" @click="tab = 'textures'"><i class="mdi mdi-checkerboard"></i> Textures</button>
    </div>
-   <div class="content">
-     <div v-show="tab === 'blocks'">
-       <Blocks/>
-     </div>
-     <div v-show="tab === 'entities'">
-       <Entities/>
-     </div>
-     <div v-show="tab === 'models'">
-       <Models/>
-     </div>
-     <div v-show="tab === 'textures'">
-       <Textures/>
-     </div>
-   </div>
+    <vue-custom-scrollbar class="content">
+        <div v-show="tab === 'blocks'">
+          <Blocks/>
+        </div>
+        <div v-show="tab === 'entities'">
+          <Entities/>
+        </div>
+        <div v-show="tab === 'models'">
+          <Models/>
+        </div>
+        <div v-show="tab === 'textures'">
+          <Textures/>
+        </div>
+    </vue-custom-scrollbar>
   </div>
 </template>
 
@@ -36,7 +36,7 @@ export default {
     Models,
     Textures,
     Blocks,
-    Entities
+    Entities,
   },
   data () {
     return {

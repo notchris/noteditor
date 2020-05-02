@@ -1,7 +1,7 @@
 <template>
-  <div id="world" class="pl-1 border-bottom border-left border-dark">
-   <details class="pl-1">
-       <summary class="border-left bg-secondary border-dark pl-1">General</summary>
+  <div id="world">
+   <details>
+       <summary>General</summary>
        <div>
         <table>
             <tbody>
@@ -15,8 +15,8 @@
         </table>
        </div>
    </details>
-   <details class="pl-1">
-       <summary class="border-left bg-secondary border-dark pl-1">Sky</summary>
+   <details>
+       <summary>Sky</summary>
        <div>
         <table>
             <tbody>
@@ -42,8 +42,8 @@
         </table>
        </div>
    </details>
-   <details class="pl-1">
-       <summary class="border-left bg-secondary border-dark pl-1">Lights</summary>
+   <details>
+       <summary>Lights</summary>
        <div>
         <table>
             <tbody>
@@ -92,9 +92,6 @@ export default {
       grid () {
           return this.$store.state.grid;
       }
-  },
-  mounted () {
-      console.log('World');
   },
   methods: {
       updateSkyColor (e) {

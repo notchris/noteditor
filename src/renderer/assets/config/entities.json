@@ -1,13 +1,16 @@
 [{
     "id": "spawn",
     "name": "Spawn",
-    "category": "entity"
+    "category": "entity",
+    "description": "Specifies the starting location in the World."
 },{
     "id": "point",
     "name": "Point",
-    "category": "entity"
+    "category": "entity",
+    "description": "Specifies a position represented as a Vector3 in the World."
 },{
     "id": "hole",
     "name": "Hole",
-    "category": "entity"
+    "category": "entity",
+    "description": "Specifies the ending location in the World."
 }]

@@ -17,6 +17,7 @@
                 <button v-tooltip.bottom="'Remove Texture'" :class="[tool === 'textureRemove' ? 'active' : '', 'button']" @click="setTool('textureRemove')"><i class="mdi mdi-checkerboard-remove"></i></button>
             </div>
         </button>
+        <button v-tooltip.right="'Eye Dropper'" :class="[tool === 'eyeDropper' ? 'active' : '', 'button']" @click="setTool('eyeDropper')"><i class="mdi mdi-eyedropper"></i></button>
     </div>
 </template>
 
@@ -41,53 +42,3 @@ export default {
   }
 };
 </script>
-
-<style>
-    #tools .button {
-        width: 29px;
-        height: 29px;
-        border-top: none;
-        border-bottom: 1px solid black;
-        border-right: none;
-        border-left: none;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        background: #888;
-        cursor: pointer;
-    }
-    #tools button.active {
-        background: #666;
-        color: #CCC;
-    }
-    #tools .button i {
-        font-size: 20px;
-        margin-left: -2px;
-    }
-    #tools button.parent {
-        position: relative;
-    }
-    #tools button.parent div {
-        display: none;
-    }
-    #tools button.parent:hover div {
-        width: auto;
-        height: 29px;
-        position: absolute;
-        top: -1px;
-        left: 29px;
-        z-index: 9999;
-        background: transparent;
-        display: block;
-        white-space: nowrap;
-    }
-    #tools button.parent:hover div button {
-        border-top: 1px solid black;
-        border-left: 1px solid black;
-        height: 30px;
-        width: 30px;
-        margin-right: -4px;
-    }
-    #tools button.parent:hover div button:last-child {
-        border-right: 1px solid black;
-    }
-</style>

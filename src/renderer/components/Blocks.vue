@@ -8,7 +8,6 @@
            <tr>
                <th>Name</th>
                <th>Points</th>
-               <th></th>
             </tr>
        </thead>
        <tbody>
@@ -16,10 +15,10 @@
             v-for="block in blocks"
             :key="block.id"
             :class="[activeCreate && activeCreate.type === block.id ? 'active' : '']"
+            @click="setActiveCreate(block)"
        >
            <td>{{block.name}}</td>
            <td>{{block.points.length}}</td>
-           <td><button :disabled="activeCreate && activeCreate.type === block.id" @click="setActiveCreate(block)">Select</button></td>
        </tr>
        </tbody>
    </table>

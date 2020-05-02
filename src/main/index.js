@@ -170,15 +170,19 @@ function init() {
   let lastLoaded = null;
   ipcMain.on('saveMap', (event, map) => {
     if (map) {
+      const parse = parseMap(map);
       const result = dialog.showSaveDialogSync(mainWindow, {
         title: 'Save Map',
-        defaultPath: lastLoaded || null,
+        defaultPath: lastLoaded || `/${parse.title}.json`,
         buttonLabel: 'Save Map'
       });
       if (result && result.length) {
         fs.writeFile(result, map, (err, r) => {
           if (err) throw err;
         });
+        if (!lastLoaded) {
+          lastLoaded = result;
+        }
       }
     } else {
       console.log('No map data.')
@@ -251,7 +255,33 @@ function init() {
       ]
     },
     {
-      label: 'Test',
+      label: 'Edit',
+      submenu: [{
+          role: '',
+          label: 'Undo',
+          click: () => {
+            mainWindow.webContents.send('undo', true);
+          }
+        },
+        {
+          role: '',
+          label: 'Redo',
+          click: () => {
+            mainWindow.webContents.send('redo', true);
+          }
+        },
+        { type: 'separator' },
+        {
+          role: '',
+          label: 'Copy',
+          click: () => {
+          // copy
+          }
+        }
+      ]
+    },
+    {
+      label: 'Physics',
       submenu: [{
           role: '',
           label: 'Start Test',

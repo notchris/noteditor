@@ -1,95 +1,140 @@
 <template>
-  <div id="objects" class="pl-1 py-1 border-bottom border-left border-dark">
-
-   <div
-    v-for="object in objects"
-    :key="object.id"
-    class="object"
-   >
-   <div class="title" @click="setActiveObject(object.id)">
-        <div class="isActive">
-            <i :style="{'color': object.active ? 'limegreen' : '#333333'}" class="mdi mdi-circle"></i>
+  <div id="objects">
+    <vue-context
+        v-for="group in groups"
+        :key="`edit_${group.id}`"
+        ref="menu"
+        :data="`edit_${group.id}`"
+    >
+        <li>
+            <a href="#" @click.prevent="toggleGroupEdit(group.id, $event); setFocus(group.id);">Rename Group</a>
+        </li>
+        <li>
+            <a href="#">Delete Group + Items</a>
+        </li>
+        <li>
+            <a href="#">Delete Group Only</a>
+        </li>
+    </vue-context>
+    <!-- Groups -->
+    <div
+        v-for="group in groups"
+        :key="group.id"
+        class="group"
+    >
+        <div class="group_title" @contextmenu.prevent="openMenu(`edit_${group.id}`, $event)">
+            <div class="toggle" @click="toggleGroup(group.id)">
+                <i :class="[group.open ? 'mdi-menu-down' : 'mdi-menu-right', 'mdi']"></i>
+            </div>
+            <div class="group_label">
+                <div :ref="`label_${group.id}`" :contenteditable="group.edit" @blur="setGroupLabel(group.id, $event); toggleGroupEdit(group.id, $event);" @click="toggleGroup(group.id)" v-text="group.label"></div>
+            </div>
         </div>
-        <i v-if="object.category === 'block'" class="mdi mdi-cube-outline"></i>
-        <i v-if="object.category === 'entity'" class="mdi mdi-alpha-e-circle-outline"></i>
-        <i v-if="object.category === 'model'" class="mdi mdi-ufo-outline"></i>
-        <span>{{object.label}}</span>
-   </div>
-   <div v-if="object.active" class="details">
-        <table>
-            <tbody>
-                <tr>
-                    <td>Category</td>
-                    <td>{{object.category}}</td>
-                </tr>
-                <tr>
-                    <td>Type</td>
-                    <td>{{object.type}}</td>
-                </tr>
-                <tr>
-                    <td>Position</td>
-                    <td>{{object.position}}</td>
-                </tr>
-                <tr>
-                    <td>Rotate</td>
-                    <td><button @click="setActiveRotation">Rotate (R)</button></td>
-                </tr>
-                <tr v-if="object.category === 'block'">
-                    <td><strong>Material</strong></td>
-                    <td></td>
-                </tr>
-                <tr v-if="object.category === 'block'">
-                    <td>Color</td>
-                    <td><input type="color" :value="object.color" @change="onColorChange($event)"></td>
-                </tr>
-                <tr v-if="object.category === 'block'">
-                    <td>Texture</td>
-                    <td>{{object.texture || 'None'}}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div v-if="group.open" class="group_content">
+        
+                <div
+                    v-for="o in objects.slice().reverse()"
+                    v-show="o.group === group.id"
+                    :key="o.id"
+                    class="object"
+                >
+                    <div class="title" @click="setActiveObject(o.id)">
+                            <div class="isActive">
+                                <i :style="{'color': o.active ? 'limegreen' : '#333333'}" class="mdi mdi-circle"></i>
+                            </div>
+                            <div class="label">
+                                <i v-if="o.category === 'block'" class="mdi mdi-cube-outline"></i>
+                                <i v-if="o.category === 'entity'" class="mdi mdi-alpha-e-circle-outline"></i>
+                                <i v-if="o.category === 'model'" class="mdi mdi-ufo-outline"></i>
+                                <span>{{o.label}} ({{o.type}})</span>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
     </div>
 
-   </div>
+    <!-- Non-Groups -->
+    <div class="ungrouped">
+        <div
+            v-for="o in objects.slice().reverse()"
+            v-show="!o.group"
+            :key="o.id"
+            class="object"
+        >
+            <div class="title" @click="setActiveObject(o.id)">
+                    <div class="isActive">
+                        <i :style="{'color': o.active ? 'limegreen' : '#333333'}" class="mdi mdi-circle"></i>
+                    </div>
+                    <div class="label">
+                        <i v-if="o.category === 'block'" class="mdi mdi-cube-outline"></i>
+                        <i v-if="o.category === 'entity'" class="mdi mdi-alpha-e-circle-outline"></i>
+                        <i v-if="o.category === 'model'" class="mdi mdi-ufo-outline"></i>
+                        <span>{{o.label}} ({{o.type}})</span>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="!objects.length && !groups.length" class="message" >No objects</div>
 
   </div>
 </template>
 
 <script>
 /* eslint-disable no-console */
-
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable vue/no-use-v-if-with-v-for */
 export default {
   name: 'Objects',
   computed: {
       objects () {
-          return this.$store.state.map.objects;
+        return this.$store.state.map.objects;
       },
-      activeObject () {
-        const a = this.$store.state.map.objects.filter((o) => o.active);
-        if (a.length) {
-            return a[0].id;
-        }
-        return null;
+      groups () {
+          return this.$store.state.map.groups;
       }
   },
   methods: {
-      setActiveObject (id) {
-          if (id === this.activeObject) {
-             this.$store.commit('setActiveObject', null);
-          } else {
-             this.$store.commit('setActiveObject', id);
-          }
-      },
-      setActiveRotation () {
-          this.$store.commit('setActiveRotation');
-      },
-      onColorChange (e) {
-          this.$store.commit('setObjectColor', e.target.value);
-      },
-      fix(v) {
-          const s = v.split(' ');
-          return `0.0 ${parseFloat(s[1]).toFixed(1)} 0.0`;
-      }
+    setFocus (id) {
+        const el = this.$refs[`label_${id}`][0];
+
+        this.$nextTick(() => {
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.setStart(el.childNodes[0], el.childNodes[0].textContent.length);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        })
+    },
+    toggleGroup (id) {
+        this.$store.commit('toggleGroup', id);
+    },
+    toggleGroupEdit (id) {
+        this.$store.commit('toggleGroupEdit', id);
+    },
+    setGroupLabel (id, e) {
+        this.$store.commit('setGroupLabel', {
+            id,
+            label: e.target.innerText
+        });
+    },
+    openMenu(itemIndex, event) {
+        for (const [index, VueComponent] of this.$refs.menu.entries()) {
+            if (VueComponent.$attrs.data === itemIndex) {
+                this.$refs.menu[index].open(event);
+                break;
+            }
+        }
+    },
+    setActiveObject (id) {
+        if (id === this.activeObject) {
+            this.$store.commit('setActiveObject', null);
+        } else {
+            this.$store.commit('setActiveObject', id);
+        }
+    }
   }
 };
 </script>

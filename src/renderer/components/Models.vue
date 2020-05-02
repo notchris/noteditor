@@ -10,7 +10,6 @@
        <thead>
            <tr>
                <th>Name</th>
-               <th></th>
             </tr>
        </thead>
        <tbody>
@@ -18,13 +17,9 @@
             v-for="model in models"
             :key="model.name"
             :class="[activeCreate && activeCreate.type === model.name ? 'active' : '']"
+            @click="setActiveCreate({category: 'model', id: model.name})"
        >
            <td>{{model.name}}</td>
-           <td><button :disabled="activeCreate && activeCreate.type === model.name"
-                @click="setActiveCreate({
-                category: 'model',
-                id: model.name
-            })">Select</button></td>
        </tr>
        </tbody>
    </table>

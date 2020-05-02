@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/static/fonts/SourceSansPro-Regular.ttf') format('truetype'),
+         url('/static/fonts/SourceSansPro-SemiBold.ttf') format('truetype'),
+         url('/static/fonts/SourceSansPro-Bold.ttf') format('truetype')
+}
+
 * {
     box-sizing: border-box;
     text-rendering: optimizeLegibility;
@@ -6,7 +13,7 @@
 }
 
 html {
-    font-family: sans-serif;
+    font-family: 'Source Sans Pro', sans-serif !important;
 }
 
 body {
@@ -32,9 +39,38 @@ iframe {
 .splitter-paneL.horizontal {
     overflow: hidden !important;
 }
+.splitter-paneL.vertical {
+    overflow: hidden !important;
+}
 
 .splitter-pane {
-    background: #8E8E8E;
+    background: #999999;
+}
+
+.v-context {
+    padding: 0 !important;
+    background-color: #DDDDDD !important;
+}
+
+.v-context > li > a {
+    padding: 2px 4px !important;
+}
+
+.v-context > li {
+    border-bottom: 1px solid #333;
+}
+.v-context > li:last-child {
+    border-bottom: none;
+}
+
+.message {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+#side {
+    width: 100%;
+    height: 100%;
 }
 
 #container {
@@ -58,6 +94,7 @@ iframe {
     position: absolute;
     top: 0;
     right: 0;
+    border-right: 1px solid black;
 }
 
 input[type="color"], input[type="number"], input[type="text"] {
@@ -73,10 +110,6 @@ button {
 .items {
     width: 100%;
     min-height: 100%;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    position: absolute;
-    bottom: auto;
     padding-top: 4px;
 }
 .item {
@@ -114,9 +147,20 @@ button {
     height: 21px;
     width: auto;
     border-right: 1px solid black;
+    border-bottom: none;
+    border-top: 1px solid black;
+    border-left: none;
     padding: 0 4px;
     float: left;
     background: #999;
+    font-weight: 600;
+    cursor: pointer;
+}
+.tabs button[disabled]:hover {
+    background: #999;
+}
+.tabs button:hover {
+    background: #BBB;
 }
 
 a.refresh {
@@ -133,22 +177,41 @@ a.refresh:hover {
 #bottom {
     width: 100%;
     height: 100%;
+    user-select: none;
 }
 .content {
     width: 100%;
     height: calc(100% - 22px);
-    overflow-y: scroll;
-    overflow-x: hidden;
+}
+.container {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+}
+
+/** Contenteditable **/
+[contenteditable] {
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+} 
+[contenteditable] br {
+    display:none;
+
+}
+[contenteditable] * {
+    display:inline;
+    white-space:nowrap;
 }
 
 /** Details stuff **/
 
 details {
-    margin-bottom: 6px;
+    margin-bottom: 2px;
 }
 
 details summary {
-    background: #999;
+    background: #AAA;
     border-bottom: 1px solid black;
     border-left: 1px solid black;
     padding: 2px 2px;
@@ -170,13 +233,73 @@ details details summary {
 }
 
 details details > div {
-    padding-left: 6px;
+    padding-left: 0;
+}
+
+#tools {
+    background: #999999;
+}
+
+/** Tools **/
+#tools .button {
+    width: 29px;
+    height: 29px;
+    border-top: none;
+    border-bottom: 1px solid #555;
+    border-right: none;
+    border-left: none;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    cursor: pointer;
+    background: #999999;
+    color: #222222;
+}
+#tools button.active {
+    background: #BBBBBB;
+    color: #111111;
+}
+#tools button.active:hover {
+    background: #BBBBBB;
+}
+#tools button:hover {
+    background: #AAAAAA;
+}
+#tools .button i {
+    font-size: 20px;
+    margin-left: -2px;
+}
+#tools button.parent {
+    position: relative;
+}
+#tools button.parent div {
+    display: none;
+}
+#tools button.parent:hover div {
+    width: auto;
+    height: 29px;
+    position: absolute;
+    top: -1px;
+    left: 29px;
+    z-index: 9999;
+    background: transparent;
+    display: block;
+    white-space: nowrap;
+}
+#tools button.parent:hover div button {
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    height: 30px;
+    width: 30px;
+    margin-right: -4px;
+}
+#tools button.parent:hover div button:last-child {
+    border-right: 1px solid black;
 }
 
 /** Objects **/
 
 #objects {
-    padding-left: 6px;
+    padding-left: 0;
 }
 
 .object {
@@ -196,18 +319,23 @@ details details > div {
     width: 100%;
     height: 20px;
     line-height: 20px;
-    background: #777;
+    background: #999;
     position: relative;
     padding-left: 24px;
     user-select: none;
     cursor: pointer;
     border-bottom: 1px solid black;
+    white-space: nowrap;
 }
 .object .details {
     width: 100%;
     height: auto;
 }
 
+.ungrouped {
+    border-top: 1px solid #444 !important;
+    margin-top: 2px;
+}
 /** Table **/
 
 table {
@@ -229,6 +357,9 @@ th {
 td {
     border-left: 1px solid black;
     border-bottom: 1px solid black;
+}
+tr {
+    cursor: pointer;
 }
 tr td:first-child {
     background: #777;
@@ -259,13 +390,14 @@ tr.active td {
 #splash div.panel {
     width: 50%;
     height: auto;
-    background: #333;
+    background: #222222;
     border: 2px solid #999;
     position: absolute;
     z-index: 9999;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    border-radius: 6px;
 }
 
 /** Tooltip **/
@@ -278,4 +410,166 @@ tr.active td {
 .vue-tooltip .tooltip-arrow {
     border-color: #333 !important;
     top: 3px !important;
+}
+
+/** Group **/
+
+.group {
+    width: 100%;
+    position: relative;
+}
+.group_title {
+    background: #BBB;
+    white-space: nowrap;
+    user-select: none;
+    cursor: pointer;
+    height: 21px;
+    line-height: 21px;
+    border-bottom: 1px solid black;
+}
+
+.group_title .toggle {
+    float: left;
+    width: 21px;
+    height: 21px;
+    background: #BBB;
+    color: black;
+    text-align: center;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+    font-size: 16px;
+}
+
+.group_title .group_label{
+    float: left;
+    width: calc(100% - 21px);
+    height: 21px;
+    background: #BBB;
+    color: black;
+    border-bottom: 1px solid black;
+    padding-left: 4px;
+}
+
+.group_content {
+    padding-left: 6px;
+}
+
+.group > div.edit {
+    position: absolute;
+    top: 1px;
+    right: 0;
+    z-index: 9999;
+    width: 20px;
+    height: 20px;
+    background: #BBB;
+    border-left: 1px solid #666;
+    border-bottom: 1px solid #000;
+    text-align: center;
+    line-height: 20px;
+}
+.group > div.edit button {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #BBB;
+    color: #000;
+}
+
+.activeTitle {
+    width: 100%;
+    background: #333;
+    color: #EEE;
+}
+
+.sectionTitle {
+    width: 100%;
+    background: #444;
+    color: #BBB;
+    padding: 2px 0 2px 4px;
+    border-bottom: 1px solid #111;
+    position: relative;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: capitalize;
+    user-select: none;
+}
+.sectionTitle button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-left: 1px solid #999;
+    border-right: none;
+    border-bottom: none;
+    border-top: none;
+    background: #444444;
+    color: #CCC;
+    height: 20px;
+    cursor: pointer;
+}
+
+.sectionTitle button:hover {
+    background:#333333;
+}
+
+/** Active Tool **/
+.activeTool {
+    font-weight: 600;
+}
+
+/** Map **/
+#map table {
+    border-top: 1px solid black;
+}
+
+/** Config **/
+.configTabs {
+    width: 100%;
+    border-bottom: 1px solid black;
+    margin-bottom: 2px;
+    clear: both;
+    height: 23px;
+}
+.configTabs button {
+    height: 22px;
+    width: 22px;
+    background: #999;
+    color: #222;
+    text-align: center;
+    border-right: 1px solid black;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    padding: 0;
+    font-size: 14px;
+    float: left;
+}
+.configTabs button[disabled] {
+    background: #666;
+    color: #111;
+}
+.configTabs button[disabled]:hover {
+    background: #666;
+}
+.configTabs button:hover {
+    background: #BBB;
+}
+.configContent {
+    width: 100%;
+    height: 100%;
+}
+
+.spawn {
+    float: right;
+    background: #AAAAAA;
+    color: #000;
+    border-left: 1px solid #333;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    height: 20px;
+}
+.spawn:hover {
+    background: #BBBBBB;
 }

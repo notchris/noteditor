@@ -8,7 +8,7 @@
            </tr>
            <tr>
                <td>Spawn</td>
-               <td>{{fix(map.spawn)}} <button :disabled="tool === 'setSpawn'" @click="setTool('setSpawn')">Update</button></td>
+               <td>{{fix(map.spawn)}} <button class="spawn" :disabled="tool === 'setSpawn'" @click="setTool('setSpawn')"><i class="mdi mdi-pencil"></i></button></td>
            </tr>
        </tbody>
    </table>
@@ -46,9 +46,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-    #map {
-        padding-left: 6px;
-    }
-</style>

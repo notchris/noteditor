@@ -5,7 +5,7 @@ import store from '../../store';
 
 export default {
   mixins: [VglObject3d],
-  props: ['object', 'camera', 'renderer'],
+  props: ['object', 'camera', 'renderer', 'pos'],
   computed: {
     inst() {
       return new TransformControls(this.camera, document.querySelector('.renderer'));
@@ -14,10 +14,19 @@ export default {
   methods: {
     attach(obj) {
       this.inst.attach(obj);
+      let p;
+      if (this.pos) {
+        p = this.pos.split(' ');
+        this.inst.translateX(-parseFloat(p[0]));
+        this.inst.translateZ(-parseFloat(p[2]));
+      }
       this.inst.addEventListener('change', () => {
-        console.log(this.vglNamespace.object3ds.get(this.object));
           if (store.state.tool === 'setSpawn') {
             store.commit('setSpawn', obj.position);
+          }
+          const helper = this.vglNamespace.object3ds.get('boxHelper');
+          if (helper) {
+            helper.setFromObject(obj)
           }
           this.renderer.requestRender();
       });
